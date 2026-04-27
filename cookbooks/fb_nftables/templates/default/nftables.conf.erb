@@ -1,0 +1,17 @@
+<% node['fb_nftables']['table'].each do |table_family, tables| %>
+  <% tables.each do |table_name, table_config| %>
+table <%= table_family %> <%= table_name %>
+delete table <%= table_family %> <%= table_name %>
+
+table <%= table_family %> <%= table_name %> {
+    <% table_config['chain'].each do |chain_name, chain_config| %>
+  chain <%= chain_name %> {
+    type <%= chain_config['type'] %> hook <%= chain_config['hook'] %> priority <%= chain_config['priority'] %>; policy <%= chain_config['policy'] %>;
+      <% chain_config['rules'].to_h.sort.each do |rule_name, rule_content| %>
+    <%= rule_content %> # <%= rule_name %>
+      <% end %>
+  }
+    <% end %>
+}
+  <% end %>
+<% end %>
